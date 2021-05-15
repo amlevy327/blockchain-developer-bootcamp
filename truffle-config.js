@@ -1,3 +1,7 @@
+require('babel-register');
+require('babel-polyfill');
+require('dotenv').config();
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -73,6 +77,9 @@ module.exports = {
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
   },
+
+  contracts_directory: './src/contracts/',
+  contracts_build_directory: './src/abis/',
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
