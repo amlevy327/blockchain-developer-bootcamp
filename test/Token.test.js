@@ -6,17 +6,17 @@ require('chai')
 
 contract('Token', (accounts) => {
 
-    describe('deployement', () => {
-        const name = 'My Name'
-        const symbol = 'Symnol'
-        const decimals = 'Decimals'
-        const totalSupply = 'Total Supply'
+    describe('deployment', () => {
+        const name = 'Andrew Token'
+        const symbol = 'AML'
+        const decimals = '18'
+        const totalSupply = '1000000000000000000000000'
         let token
         
         beforeEach(async () => {
             token = await Token.new()
         })
-        
+
         it('tracks the name', async () => {
             const result = await token.name()
             result.should.equal(name)
@@ -29,12 +29,12 @@ contract('Token', (accounts) => {
 
         it('tracks the decimals', async () => {
             const result = await token.decimals()
-            result.should.equal(decimals)
+            result.toString().should.equal(decimals)
         })
 
         it('tracks the total supply', async () => {
             const result = await token.totalSupply()
-            result.should.equal(totalSupply)
+            result.toString().should.equal(totalSupply)
         })
     })
 })
