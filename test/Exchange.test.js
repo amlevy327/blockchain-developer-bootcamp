@@ -230,4 +230,106 @@ contract('Exchange', ([deployer, feeAccount, user1, user2]) => {
             balance.toString().should.equal(amount.toString())
         })
     })
+
+    describe('making orders', () => {
+
+        let result
+        let orderCount
+        let tokenGet
+        let amountGet
+        let tokenGive
+        let amountGive
+        
+        beforeEach(async () => {
+            
+            tokenGet = token.address
+            amountGet = tokens(1)
+            tokenGive = ETHER_ADDRESS
+            amountGive = ether(1)
+            result = await exchange.makeOrder(tokenGet, amountGet, tokenGive, amountGive, { from: user1 })
+        }) 
+
+        it('tracks new order', async () => {
+            orderCount = await exchange.orderCount()
+            orderCount.toString().should.equal('1')
+            const order = await exchange.orders('1')
+            order.id.toString().should.equal('1', 'id is correct')
+            order.user.should.equal(user1, 'user is correct')
+            order.tokenGet.should.equal(tokenGet, 'token get is correct')
+            order.amountGet.toString().should.equal(amountGet.toString(), 'amount get is correct')
+            order.tokenGive.should.equal(tokenGive, 'token give is correct')
+            order.amountGive.toString().should.equal(amountGive.toString(), 'amount give is correct')
+            order.timestamp.toString().length.should.be.at.least(1, 'timestamp is present')
+        })
+
+        it('emits Order event', async () => {
+            const log = result.logs[0]
+            log.event.should.equal('Order')
+            const event = log.args
+            event.id.toString().should.equal(orderCount.toString(), 'order id is correct')
+            event.user.toString().should.equal(user1.toString(), 'user address is correct')
+            event.tokenGet.toString().should.equal(tokenGet.toString(), 'token get address is correct')
+            event.amountGet.toString().should.equal(amountGet.toString(), 'amount get is correct')
+            event.tokenGive.toString().should.equal(tokenGive.toString(), 'token give address is correct')
+            event.amountGive.toString().should.equal(amountGive.toString(), 'amount give is correct')
+            event.timestamp.toString().length.should.be.at.least(1, 'timestamp is present')
+        })
+    })
+
+    describe('order actions', () => {
+
+        let result
+        let tokenGet
+        let amountGet
+        let tokenGive
+        let amountGive
+
+        beforeEach(async() => {
+            tokenGet = token.address
+            amountGet = tokens(1)
+            tokenGive = ETHER_ADDRESS
+            amountGive = ether(1)
+            await exchange.depositEther( { from: user1, value: amountGive } )
+            await exchange.makeOrder(tokenGet, amountGet, tokenGive, amountGive, { from: user1 })
+        })
+
+        describe('cancelling order', () => {
+            
+            describe('success', () => {
+
+                beforeEach(async () => {
+                    result = await exchange.cancelOrder('1', { from: user1 })
+                })
+
+                it('updates cancelled orders', async () => {
+                    const orderCancelled = await exchange.orderCancelled('1')
+                    orderCancelled.should.equal(true)
+                })
+
+                it('emits Cancel event', async () => {
+                    const log = result.logs[0]
+                    log.event.should.equal('Cancel')
+                    const event = log.args
+                    event.id.toString().should.equal('1', 'cancel id is correct')
+                    event.user.toString().should.equal(user1.toString(), 'user address is correct')
+                    event.tokenGet.toString().should.equal(tokenGet.toString(), 'token get address is correct')
+                    event.amountGet.toString().should.equal(amountGet.toString(), 'amount get is correct')
+                    event.tokenGive.toString().should.equal(tokenGive.toString(), 'token give address is correct')
+                    event.amountGive.toString().should.equal(amountGive.toString(), 'amount give is correct')
+                    event.timestamp.toString().length.should.be.at.least(1, 'timestamp is present')
+                })
+            })
+
+            describe('failure', () => {
+
+                it('rejects incorrect id', async () => {
+                    await exchange.cancelOrder('100', { from: user1 }).should.be.rejectedWith(EVM_REVERT)
+                })
+
+                it('rejects unauthorized cancellations', async () => {
+                    await exchange.cancelOrder('1', { from: user2 }).should.be.rejectedWith(EVM_REVERT)
+                })
+            })
+        })
+    })
 })
