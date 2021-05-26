@@ -4,7 +4,7 @@ import './App.css'
 import Navbar from './Navbar'
 import Content from './Content'
 import { connect } from 'react-redux'
-import { 
+import {
   loadWeb3,
   loadAccount,
   loadToken,
