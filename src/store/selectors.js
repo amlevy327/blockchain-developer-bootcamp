@@ -180,3 +180,86 @@ const decorateOrderBookOrder = (order) => {
         orderFillClass: (orderType === 'buy' ? 'sell' : 'buy')
     })
 }
+
+// MY TRANSACTIONS
+
+export const myFilledOrdersLoadedSelector = createSelector(filledOrdersLoaded, loaded => loaded)
+
+export const myFilledOrdersSelector = createSelector(
+    account,
+    filledOrders,
+    (account, orders) => {
+        // find our orders
+        orders = orders.filter((o) => o.user === account || o.userFill === account)
+        // sort by date ascendidng 
+        orders = orders.sort((a,b) => a.timestamp - b.timestamp)
+        // decorate 
+        orders = decorateMyFilledOrders(orders, account)
+        
+        return(orders)
+    }
+)
+
+const decorateMyFilledOrders = (orders, account) => {
+    return(
+        orders.map((order) => {
+            order = decorateOrder(order)
+            order = decorateMyFilledOrder(order, account)
+            return(order)
+        })
+    )
+}
+
+const decorateMyFilledOrder = (order, account) => {
+    const myOrder = order.user === account
+
+    let orderType
+    if(myOrder) {
+        orderType = order.tokenGive === ETHER_ADDRESS ? 'buy' : 'sell'
+    } else {
+        orderType = order.tokenGive === ETHER_ADDRESS ? 'sell' : 'buy'
+    }
+    
+    return({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED),
+        orderSign: (orderType === 'buy' ? '+' : '-')
+    })
+}
+
+export const myOpenOrdersLoadedSelector = createSelector(orderBookLoaded, loaded => loaded)
+
+export const myOpenOrdersSelector = createSelector(
+    account,
+    openOrders,
+    (account, orders) => {
+        // filter by current account
+        orders = orders.filter((o) => o.user === account)
+        // decorate
+        orders = decorateMyOpenOrders(orders)
+        // sort by date descending 
+        orders = orders.sort((a,b) => b.timestamp - a.timestamp)
+        return(orders)
+    }
+)
+
+const decorateMyOpenOrders = (orders, account) => {
+    return(
+        orders.map((order) => {
+            order = decorateOrder(order)
+            order = decorateMyOpenOrder(order)
+            return(order)
+        })
+    )
+}
+
+const decorateMyOpenOrder = (order, account) => {
+    const orderType = order.tokenGive === ETHER_ADDRESS ? 'buy' : 'sell'
+    
+    return({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED),
+    })
+}
