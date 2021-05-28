@@ -65,3 +65,16 @@ export function orderCancelled(order) {
         order
     }
 }
+
+export function orderFilling(order) {
+    return {
+        type: 'ORDER_FILLING'
+    }
+}
+
+export function orderFilled(order) {
+    return {
+        type: 'ORDER_FILLED',
+        order
+    }
+}
