@@ -42,7 +42,6 @@ const showMyOpenOrders = (props) => {
                         <td
                             className="text-muted cancel-order"
                             onClick={(e) => {
-                                console.log('Cancelling order...')
                                 cancelOrder(dispatch, exchange, order, account)
                             }}
                         >X</td>
