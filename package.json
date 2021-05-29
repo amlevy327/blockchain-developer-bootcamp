@@ -1,8 +1,8 @@
 {
   "name": "bootcamp",
   "version": "0.2.0",
-  "description": "Decentralized Ethereum Token Exchange",
-  "author": "dev@dappuniversity.com",
+  "description": "Andrew Token Exchange",
+  "author": "amlevy327@gmail.com",
   "private": true,
   "homepage": ".",
   "engines": {
