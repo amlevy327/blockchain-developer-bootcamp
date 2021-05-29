@@ -251,6 +251,10 @@ class Balance extends Component {
   componentWillMount() {
     this.loadBlockchainData()
   }
+
+  componentWillReceiveProps() {
+    this.loadBlockchainData()
+} 
   
   async loadBlockchainData() {
     const { dispatch, web3, exchange, token, account } = this.props

@@ -301,7 +301,7 @@ export const priceChartSelector = createSelector(
 
 const buildGraphData = (orders) => {
     // group orders by hour
-    orders = groupBy(orders, (o) => moment.unix(o.timestamp).startOf('hour').format)
+    orders = groupBy(orders, (o) => moment.unix(o.timestamp).startOf('hour').format())
     // get each hour where data exists
     const hours = Object.keys(orders)
     // build graph series
@@ -314,7 +314,7 @@ const buildGraphData = (orders) => {
         const high = maxBy(group, 'tokenPrice')
         const low = minBy(group, 'tokenPrice')
         return({
-            x: Date(hour),
+            x: new Date(hour),
             y: [open.tokenPrice, high.tokenPrice, low.tokenPrice, close.tokenPrice]
         })
     })
@@ -377,3 +377,9 @@ export const tokenDepositAmountSelector = createSelector(tokenDepositAmount, amo
 
 const tokenWithdrawAmount = state => get(state, 'exchange.tokenWithdrawAmount', null)
 export const tokenWithdrawAmountSelector = createSelector(tokenWithdrawAmount, amount => amount)
+
+const buyOrder = state => get(state, 'exchange.buyOrder', {})
+export const buyOrderSelector = createSelector(buyOrder, order => order)
+
+const sellOrder = state => get(state, 'exchange.sellOrder', {})
+export const sellOrderSelector = createSelector(sellOrder, order => order)
